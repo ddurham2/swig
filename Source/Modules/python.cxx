@@ -1516,6 +1516,7 @@ public:
       Delete(autodoc);
     }
 
+#if 0
     if (!docstr) {
       if (doxygen) {
 	docstr = Getattr(n, "python:docstring");
@@ -1537,6 +1538,21 @@ public:
 	}
       }
     }
+#else
+    if (doxygen && doxygenTranslator->hasDocumentation(n)) {
+      String *tmp = doxygenTranslator->getDocumentation(n, 0);
+      if (docstr) {
+        // append the doxygen docstring to the existing one (which is
+        // hopefully a meaningful function prototype or something that
+        // meaningfully should come first)
+        Append(docstr, "\n\n");
+        Append(docstr, tmp);
+        Delete(tmp);
+      } else {
+        docstr = tmp;
+      }
+    }
+#endif
 
     if (!docstr)
       docstr = NewString("");
@@ -1872,6 +1888,7 @@ public:
 
 	switch (ad_type) {
 	case AUTODOC_CLASS:
+#if 0
 	  {
 	    // Only do the autodoc if there isn't a docstring for the class
 	    String *str = Getattr(n, "feature:docstring");
@@ -1890,6 +1907,7 @@ public:
 	      }
 	    }
 	  }
+#endif
 	  break;
 	case AUTODOC_CTOR:
 	  if (Strcmp(class_name, symname) == 0) {
